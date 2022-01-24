@@ -23,7 +23,7 @@ const treasuryKey = PrivateKey.fromString(process.env.TREASURY_PVKEY);
 const aliceId = AccountId.fromString(process.env.ALICE_ID);
 const aliceyKey = PrivateKey.fromString(process.env.ALICE_PVKEY);
 
-const client = Client.forPreviewnet().setOperator(operatorId, operatorKey);
+const client = Client.forTestnet().setOperator(operatorId, operatorKey);
 
 async function main() {
 	//create token
