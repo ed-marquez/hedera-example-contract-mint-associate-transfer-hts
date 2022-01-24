@@ -27,10 +27,12 @@ const aliceyKey = PrivateKey.fromString(process.env.ALICE_PVKEY);
 const client = Client.forTestnet().setOperator(operatorId, operatorKey);
 
 async function main() {
-	//create token
+	// PART 1 ===================================
+	console.log(`PART 1 ===================================`);
+	//Create a fungible token
 	const tokenCreateTx = await new TokenCreateTransaction()
-		.setTokenName("testToken")
-		.setTokenSymbol("TT")
+		.setTokenName("hbarRocks")
+		.setTokenSymbol("HROK")
 		.setDecimals(0)
 		.setInitialSupply(100)
 		.setTreasuryAccountId(treasuryId)
@@ -49,6 +51,8 @@ async function main() {
 	const tokenInfo1 = await tQueryFcn(tokenId);
 	console.log(`- Initial token supply: ${tokenInfo1.totalSupply.low} \n`);
 
+	// PART 2 ===================================
+	console.log(`PART 2 ===================================`);
 	//Create a file on Hedera and store the hex-encoded bytecode
 	const bytecode = fs.readFileSync("./MintAssociateTransferHTS_sol_myContract.bin");
 
@@ -58,6 +62,7 @@ async function main() {
 	const bytecodeFileId = fileCreateRx.fileId;
 	console.log(`- The smart contract bytecode file ID is: ${bytecodeFileId}`);
 
+	// Append contents to the file
 	const fileAppendTx = new FileAppendTransaction()
 		.setFileId(bytecodeFileId)
 		.setContents(bytecode)
@@ -67,7 +72,7 @@ async function main() {
 	const fileAppendRx = await fileAppendSubmit.getReceipt(client);
 	console.log(`- Content added: ${fileAppendRx.status} \n`);
 
-	// Instantiate the contract
+	// Create the smart contract
 	const contractInstantiateTx = new ContractCreateTransaction()
 		.setBytecodeFileId(bytecodeFileId)
 		.setGas(3000000)
@@ -83,7 +88,7 @@ async function main() {
 	const tokenInfo2p1 = await tQueryFcn(tokenId);
 	console.log(`- Token supply key: ${tokenInfo2p1.supplyKey.toString()}`);
 
-	// Update the token so the smart contract manages the supply
+	// Update the fungible token so the smart contract manages the supply
 	const tokenUpdateTx = await new TokenUpdateTransaction()
 		.setTokenId(tokenId)
 		.setSupplyKey(contractId)
@@ -97,7 +102,9 @@ async function main() {
 	const tokenInfo2p2 = await tQueryFcn(tokenId);
 	console.log(`- New token supply key: ${tokenInfo2p2.supplyKey.toString()} \n`);
 
-	//Create the transaction to update the contract state variables
+	// PART 3 ===================================
+	console.log(`PART 3 ===================================`);
+	//Execute a contract function (mint)
 	const contractExecTx = await new ContractExecuteTransaction()
 		.setContractId(contractId)
 		.setGas(3000000)
@@ -111,7 +118,7 @@ async function main() {
 	const tokenInfo3 = await tQueryFcn(tokenId);
 	console.log(`- New token supply: ${tokenInfo3.totalSupply.low} \n`);
 
-	//Create the transaction to update the contract state variables
+	//Execute a contract function (associate)
 	const contractExecTx1 = await new ContractExecuteTransaction()
 		.setContractId(contractId)
 		.setGas(3000000)
@@ -123,7 +130,7 @@ async function main() {
 	const contractExecRx1 = await contractExecSubmit1.getReceipt(client);
 	console.log(`- Token association with Alice's account: ${contractExecRx1.status.toString()} \n`);
 
-	// Create the transaction to update the contract state variables
+	//Execute a contract function (transfer)
 	const contractExecTx2 = await new ContractExecuteTransaction()
 		.setContractId(contractId)
 		.setGas(3000000)
