@@ -27,8 +27,13 @@ const aliceyKey = PrivateKey.fromString(process.env.ALICE_PVKEY);
 const client = Client.forTestnet().setOperator(operatorId, operatorKey);
 
 async function main() {
-	// PART 1 ===================================
-	console.log(`PART 1 ===================================`);
+	// STEP 1 ===================================
+	console.log(`STEP 1 ===================================`);
+	const bytecode = fs.readFileSync("./MintAssociateTransferHTS_sol_myContract.bin");
+	console.log(`- Done \n`);
+
+	// STEP 2 ===================================
+	console.log(`STEP 2 ===================================`);
 	//Create a fungible token
 	const tokenCreateTx = await new TokenCreateTransaction()
 		.setTokenName("hbarRocks")
@@ -51,11 +56,7 @@ async function main() {
 	const tokenInfo1 = await tQueryFcn(tokenId);
 	console.log(`- Initial token supply: ${tokenInfo1.totalSupply.low} \n`);
 
-	// PART 2 ===================================
-	console.log(`PART 2 ===================================`);
 	//Create a file on Hedera and store the hex-encoded bytecode
-	const bytecode = fs.readFileSync("./MintAssociateTransferHTS_sol_myContract.bin");
-
 	const fileCreateTx = new FileCreateTransaction().setKeys([operatorKey]);
 	const fileSubmit = await fileCreateTx.execute(client);
 	const fileCreateRx = await fileSubmit.getReceipt(client);
@@ -72,6 +73,8 @@ async function main() {
 	const fileAppendRx = await fileAppendSubmit.getReceipt(client);
 	console.log(`- Content added: ${fileAppendRx.status} \n`);
 
+	// STEP 3 ===================================
+	console.log(`STEP 3 ===================================`);
 	// Create the smart contract
 	const contractInstantiateTx = new ContractCreateTransaction()
 		.setBytecodeFileId(bytecodeFileId)
@@ -102,8 +105,8 @@ async function main() {
 	const tokenInfo2p2 = await tQueryFcn(tokenId);
 	console.log(`- New token supply key: ${tokenInfo2p2.supplyKey.toString()} \n`);
 
-	// PART 3 ===================================
-	console.log(`PART 3 ===================================`);
+	// STEP 4 ===================================
+	console.log(`STEP 4 ===================================`);
 	//Execute a contract function (mint)
 	const contractExecTx = await new ContractExecuteTransaction()
 		.setContractId(contractId)
