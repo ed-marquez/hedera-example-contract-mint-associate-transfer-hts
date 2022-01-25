@@ -6,7 +6,7 @@ import "./hip-206/HederaTokenService.sol";
 import "./hip-206/HederaResponseCodes.sol";
 
 
-contract myContract is HederaTokenService {
+contract MintAssoTransHTS is HederaTokenService {
 
     address tokenAddress;
 
