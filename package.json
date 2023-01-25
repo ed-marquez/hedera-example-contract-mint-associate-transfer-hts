@@ -1,13 +1,21 @@
 {
-	"name": "hts-mint-associate-transfer-contract",
-	"version": "1.0.0",
-	"main": "index.js",
-	"scripts": {},
-	"author": "",
-	"license": "ISC",
-	"dependencies": {
-		"@hashgraph/sdk": "^2.7.0",
-		"dotenv": "^14.2.0"
-	},
-	"description": ""
+  "name": "hts-mint-associate-transfer-contract",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {},
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "@hashgraph/sdk": "^2.7.0",
+    "dotenv": "^14.3.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ed-marquez/hedera-example-contract-mint-associate-transfer-hts.git"
+  },
+  "bugs": {
+    "url": "https://github.com/ed-marquez/hedera-example-contract-mint-associate-transfer-hts/issues"
+  },
+  "homepage": "https://github.com/ed-marquez/hedera-example-contract-mint-associate-transfer-hts#readme",
+  "description": ""
 }

@@ -25,6 +25,8 @@ const aliceId = AccountId.fromString(process.env.ALICE_ID);
 const aliceyKey = PrivateKey.fromString(process.env.ALICE_PVKEY);
 
 const client = Client.forTestnet().setOperator(operatorId, operatorKey);
+client.setDefaultMaxTransactionFee(new Hbar(200));
+client.setMaxQueryPayment(new Hbar(50));
 
 async function main() {
 	// STEP 1 ===================================
@@ -65,11 +67,7 @@ async function main() {
 	console.log(`- The smart contract bytecode file ID is ${bytecodeFileId}`);
 
 	// Append contents to the file
-	const fileAppendTx = new FileAppendTransaction()
-		.setFileId(bytecodeFileId)
-		.setContents(bytecode)
-		.setMaxChunks(10)
-		.freezeWith(client);
+	const fileAppendTx = new FileAppendTransaction().setFileId(bytecodeFileId).setContents(bytecode).setMaxChunks(10).freezeWith(client);
 	const fileAppendSign = await fileAppendTx.sign(treasuryKey);
 	const fileAppendSubmit = await fileAppendSign.execute(client);
 	const fileAppendRx = await fileAppendSubmit.getReceipt(client);
@@ -94,11 +92,7 @@ async function main() {
 	console.log(`- Token supply key: ${tokenInfo2p1.supplyKey.toString()}`);
 
 	// Update the fungible so the smart contract manages the supply
-	const tokenUpdateTx = await new TokenUpdateTransaction()
-		.setTokenId(tokenId)
-		.setSupplyKey(contractId)
-		.freezeWith(client)
-		.sign(treasuryKey);
+	const tokenUpdateTx = await new TokenUpdateTransaction().setTokenId(tokenId).setSupplyKey(contractId).freezeWith(client).sign(treasuryKey);
 	const tokenUpdateSubmit = await tokenUpdateTx.execute(client);
 	const tokenUpdateRx = await tokenUpdateSubmit.getReceipt(client);
 	console.log(`- Token update status: ${tokenUpdateRx.status}`);
@@ -126,10 +120,7 @@ async function main() {
 	const contractExecTx1 = await new ContractExecuteTransaction()
 		.setContractId(contractId)
 		.setGas(3000000)
-		.setFunction(
-			"tokenAssociate",
-			new ContractFunctionParameters().addAddress(aliceId.toSolidityAddress())
-		)
+		.setFunction("tokenAssociate", new ContractFunctionParameters().addAddress(aliceId.toSolidityAddress()))
 		.freezeWith(client);
 	const contractExecSign1 = await contractExecTx1.sign(aliceyKey);
 	const contractExecSubmit1 = await contractExecSign1.execute(client);
@@ -142,10 +133,7 @@ async function main() {
 		.setGas(3000000)
 		.setFunction(
 			"tokenTransfer",
-			new ContractFunctionParameters()
-				.addAddress(treasuryId.toSolidityAddress())
-				.addAddress(aliceId.toSolidityAddress())
-				.addInt64(50)
+			new ContractFunctionParameters().addAddress(treasuryId.toSolidityAddress()).addAddress(aliceId.toSolidityAddress()).addInt64(50)
 		)
 		.freezeWith(client);
 	const contractExecSign2 = await contractExecTx2.sign(treasuryKey);
